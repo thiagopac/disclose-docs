@@ -2,7 +2,6 @@
   "name": "disclose-docs",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
   "scripts": {
     "start": "docusaurus start",
     "build": "docusaurus build",
@@ -15,15 +14,13 @@
     "@docusaurus/preset-classic": "^3.6.1",
     "@mdx-js/react": "^3.0.1",
     "@codemirror/commands": "^6.6.0",
-    "@codemirror/highlight": "^0.19.8",
     "@codemirror/lang-javascript": "^6.2.2",
     "@codemirror/language": "^6.10.2",
     "@codemirror/state": "^6.4.1",
-    "@codemirror/stream-parser": "^0.19.9",
-    "@codemirror/theme-one-dark": "^6.2.0",
+    "@codemirror/theme-one-dark": "^6.0.2",
     "@codemirror/view": "^6.28.4",
     "clsx": "^2.1.1",
-    "disclose-dsl": "file:../disclose-dsl",
+    "disclose-dsl": "^0.1.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   }

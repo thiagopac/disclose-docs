@@ -5,12 +5,12 @@ const config: Config = {
   title: 'Disclose DSL',
   tagline: 'A fluent, declarative DSL for animation and motion design',
   url: 'https://thiagopac.github.io',
-  baseUrl: '/disclose-dsl/',
+  baseUrl: '/disclose-docs/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/logo.svg',
   organizationName: 'thiagopac',
-  projectName: 'disclose-dsl',
+  projectName: 'disclose-docs',
   trailingSlash: false,
 
   presets: [
@@ -33,11 +33,11 @@ const config: Config = {
     navbar: {
       title: 'Disclose DSL',
       items: [
-        { to: '/', label: 'Docs', position: 'left' },
-        { to: '/examples', label: 'Examples', position: 'left' },
-        { to: '/play', label: 'Play', position: 'left' },
+        { to: '/', label: 'Docs', position: 'left', activeBaseRegex: '^/disclose-docs/(?!play|examples)' },
+        { to: '/examples', label: 'Examples', position: 'left', activeBasePath: '/examples' },
+        { to: '/play', label: 'Play', position: 'left', activeBasePath: '/play' },
         {
-          href: 'https://github.com/thiagopac/disclose-dsl',
+          href: 'https://github.com/thiagopac/disclose-docs',
           label: 'GitHub',
           position: 'right',
         },
@@ -59,7 +59,7 @@ const config: Config = {
           items: [
             { label: 'Examples', to: '/examples' },
             { label: 'Play', to: '/play' },
-            { label: 'GitHub', href: 'https://github.com/thiagopac/disclose-dsl' },
+            { label: 'GitHub', href: 'https://github.com/thiagopac/disclose-docs' },
           ],
         },
       ],

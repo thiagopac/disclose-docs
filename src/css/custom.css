@@ -16,9 +16,9 @@ html[data-theme='dark'] {
 }
 
 .play-layout {
-  max-width: 1200px;
+  width: 100%;
   margin: 0 auto;
-  padding: 2rem 1.5rem 3rem;
+  padding: 1rem 1.5rem 3rem;
 }
 
 .play-header {
@@ -26,21 +26,29 @@ html[data-theme='dark'] {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.75rem;
 }
 
-.play-header h1 {
-  margin: 0;
+.play-title {
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
-.play-subtitle {
-  margin: 0.25rem 0 0;
-  color: var(--ifm-color-emphasis-700);
+.play-title-text {
+  font-weight: 700;
+  color: #111827;
 }
 
-.play-hint {
-  margin: 0.35rem 0 0;
+html[data-theme='dark'] .play-title-text {
+  color: #f1f5f9;
+}
+
+.play-description {
+  margin-top: 0.2rem;
   font-size: 0.9rem;
+  letter-spacing: 0;
+  text-transform: none;
   color: var(--ifm-color-emphasis-600);
 }
 
@@ -48,38 +56,183 @@ html[data-theme='dark'] {
   background: var(--ifm-color-primary);
   color: white;
   border: none;
-  padding: 0.65rem 1.2rem;
-  border-radius: 999px;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
 }
 
 .play-grid {
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: 1.5rem;
+  grid-template-columns: 1fr 12px 1fr;
+  gap: 0;
+  align-items: stretch;
+  height: calc(100vh - 190px);
+  min-height: 520px;
+}
+
+.play-left {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
 }
 
 .play-editor,
 .play-preview {
   border: 1px solid var(--dsl-border);
-  border-radius: 16px;
-  background: var(--dsl-bg);
+  border-radius: 8px;
+  background: #ffffff;
   overflow: hidden;
-  min-height: 420px;
+  height: 100%;
+  min-height: 0;
+}
+
+.play-left .play-editor {
+  flex: 1;
+}
+
+.play-divider {
+  width: 12px;
+  cursor: col-resize;
+  position: relative;
+}
+
+.play-divider::before {
+  content: "";
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  left: 50%;
+  width: 2px;
+  transform: translateX(-50%);
+  background: var(--dsl-border);
+}
+
+body.is-dragging {
+  cursor: col-resize;
+  user-select: none;
 }
 
 .dsl-editor {
   height: 100%;
-  min-height: 420px;
+  min-height: 0;
+}
+
+#play-canvas,
+.dsl-editor .cm-editor {
+  height: 100%;
+}
+
+.dsl-editor .cm-editor {
+  font-family: "SF Mono", "JetBrains Mono", "Fira Code", Menlo, Consolas, monospace;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.dsl-editor .cm-content {
+  padding: 20px 18px;
+}
+
+.dsl-editor .cm-scroller {
+  font-family: inherit;
+  height: 100%;
+}
+
+.dsl-editor .cm-content {
+  min-height: 100%;
+}
+
+.play-console {
+  border: 1px solid var(--dsl-border);
+  border-radius: 8px;
+  background: #ffffff;
+  overflow: hidden;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+}
+
+.play-console-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--dsl-border);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ifm-color-emphasis-600);
+}
+
+.play-console-clear {
+  background: transparent;
+  border: 1px solid var(--dsl-border);
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  color: var(--ifm-color-emphasis-700);
+}
+
+.play-console-body {
+  flex: 1;
+  overflow: auto;
+  padding: 10px 12px;
+  font-family: "SF Mono", "JetBrains Mono", "Fira Code", Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.play-console-empty {
+  color: var(--ifm-color-emphasis-500);
+}
+
+.play-console-line {
+  white-space: pre-wrap;
+}
+
+html[data-theme='dark'] .play-console {
+  background: #282c34;
+  border-color: #1f2937;
+}
+
+html[data-theme='dark'] .play-console-header {
+  border-color: #1f2937;
+}
+
+html[data-theme='dark'] .play-console-clear {
+  border-color: #1f2937;
+  color: #e2e8f0;
+}
+
+html[data-theme='dark'] .play-editor,
+html[data-theme='dark'] .play-preview {
+  background: #282c34;
+  border-color: #1f2937;
+}
+
+html[data-theme='dark'] .dsl-editor .cm-editor {
+}
+
+html[data-theme='dark'] .dsl-editor .cm-gutters {
+}
+
+html[data-theme='dark'] .dsl-editor .cm-activeLine,
+html[data-theme='dark'] .dsl-editor .cm-activeLineGutter {
+  background: rgba(148, 163, 184, 0.08);
+}
+
+html[data-theme='dark'] #play-canvas {
+  background: #282c34;
 }
 
 #play-canvas {
   width: 100%;
   height: 100%;
-  min-height: 420px;
+  min-height: 520px;
   display: block;
-  background: radial-gradient(circle at 20% 20%, #ffffff, #e2e8f0);
+  background: #ffffff;
 }
 
 .play-error {

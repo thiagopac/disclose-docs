@@ -1,67 +1,10 @@
 import React, { useEffect, useRef } from 'react';
-import { EditorState } from '@codemirror/state';
-import { EditorView, keymap } from '@codemirror/view';
-import { defaultHighlightStyle, syntaxHighlighting } from '@codemirror/language';
-import { StreamLanguage } from '@codemirror/stream-parser';
+import { Compartment, EditorState } from '@codemirror/state';
+import { EditorView, keymap, lineNumbers, highlightActiveLine, highlightActiveLineGutter } from '@codemirror/view';
+import { defaultHighlightStyle, syntaxHighlighting, indentOnInput } from '@codemirror/language';
 import { indentWithTab } from '@codemirror/commands';
-import { oneDark } from '@codemirror/theme-one-dark';
-
-const keywords = new Set([
-  'Scene',
-  'Circle',
-  'Rect',
-  'RoundedRect',
-  'Ellipse',
-  'Line',
-  'Path',
-  'Polygon',
-  'RegularPolygon',
-  'RegularStar',
-  'Star',
-  'Text',
-  'Image',
-  'Arc',
-  'Ring',
-  'BezierPath',
-  'Capsule',
-  'Pie',
-  'Spiral',
-  'Custom',
-  'sequence',
-  'parallel',
-  'on',
-  'when',
-  'Copy',
-]);
-
-const dslLanguage = StreamLanguage.define({
-  token(stream) {
-    if (stream.eatSpace()) return null;
-    const ch = stream.peek();
-    if (ch === '/' && stream.match('//')) {
-      stream.skipToEnd();
-      return 'comment';
-    }
-    if (ch === '"' || ch === "'") {
-      stream.next();
-      let escaped = false;
-      while (!stream.eol()) {
-        const c = stream.next();
-        if (c === ch && !escaped) break;
-        escaped = !escaped && c === '\\';
-      }
-      return 'string';
-    }
-    if (stream.match(/-?\d+(\.\d+)?/)) return 'number';
-    if (stream.match(/[A-Za-z_][A-Za-z0-9_]*/)) {
-      const word = stream.current();
-      if (keywords.has(word)) return 'keyword';
-      return 'variableName';
-    }
-    stream.next();
-    return null;
-  },
-});
+import { javascript } from '@codemirror/lang-javascript';
+import { oneDark, oneDarkHighlightStyle } from '@codemirror/theme-one-dark';
 
 type Props = {
   value: string;
@@ -71,6 +14,8 @@ type Props = {
 export function CodeEditor({ value, onChange }: Props) {
   const host = useRef<HTMLDivElement | null>(null);
   const viewRef = useRef<EditorView | null>(null);
+  const themeCompartment = useRef(new Compartment()).current;
+  const highlightCompartment = useRef(new Compartment()).current;
 
   useEffect(() => {
     if (!host.current) return;
@@ -81,22 +26,71 @@ export function CodeEditor({ value, onChange }: Props) {
       }
     });
 
+    const isDark = document.documentElement.dataset.theme === 'dark';
     const state = EditorState.create({
       doc: value,
       extensions: [
-        dslLanguage,
-        syntaxHighlighting(defaultHighlightStyle),
+        javascript(),
+        indentOnInput(),
+        lineNumbers(),
+        highlightActiveLine(),
+        highlightActiveLineGutter(),
+        highlightCompartment.of(syntaxHighlighting(isDark ? oneDarkHighlightStyle : defaultHighlightStyle)),
+        themeCompartment.of(
+          isDark
+            ? oneDark
+            : EditorView.theme(
+                {
+                  '&': { backgroundColor: '#ffffff', color: '#111827' },
+                  '.cm-gutters': {
+                    backgroundColor: '#ffffff',
+                    color: '#64748b',
+                    borderRight: '1px solid #e2e8f0',
+                  },
+                },
+                { dark: false }
+              )
+        ),
         keymap.of([indentWithTab]),
-        oneDark,
         updateListener,
         EditorView.lineWrapping,
+        EditorState.tabSize.of(2),
       ],
     });
 
     const view = new EditorView({ state, parent: host.current });
     viewRef.current = view;
 
+    const observer = new MutationObserver(() => {
+      const dark = document.documentElement.dataset.theme === 'dark';
+      view.dispatch({
+        effects: [
+          themeCompartment.reconfigure(
+            dark
+              ? oneDark
+              : EditorView.theme(
+                  {
+                    '&': { backgroundColor: '#ffffff', color: '#111827' },
+                    '.cm-gutters': {
+                      backgroundColor: '#ffffff',
+                      color: '#64748b',
+                      borderRight: '1px solid #e2e8f0',
+                    },
+                  },
+                  { dark: false }
+                )
+          ),
+          highlightCompartment.reconfigure(
+            syntaxHighlighting(dark ? oneDarkHighlightStyle : defaultHighlightStyle)
+          ),
+        ],
+      });
+    });
+
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
     return () => {
+      observer.disconnect();
       view.destroy();
       viewRef.current = null;
     };
