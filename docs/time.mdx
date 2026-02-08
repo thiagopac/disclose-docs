@@ -1,0 +1,23 @@
+---
+id: time
+title: Time
+---
+
+Most animations accept a `duration` and optional timing controls.
+
+## Time References
+
+You can schedule modifiers using `start` with numeric values or string references:
+
+- `scene+200` starts 200ms after scene start
+- `prev.end+150` starts 150ms after the previous modifier ends
+
+```ts
+import { Scene, Circle } from 'disclose-dsl';
+
+const scene = Scene(() => [
+  Circle(40)
+    .move({ x: [-120, 120], duration: 600 })
+    .opacity({ from: 0, to: 1, duration: 400, start: 'prev.end+100' }),
+]);
+```

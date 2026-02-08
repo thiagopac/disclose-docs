@@ -1,0 +1,27 @@
+---
+id: flow
+title: Flow
+---
+
+Flow helpers let you compose multiple items in time.
+
+## Helpers
+
+- `sequence(a, b, c)` plays items back-to-back
+- `parallel(a, b, c)` plays items together
+- `on(start, ...items)` schedules items at a specific time
+- `when(predicate, ...items)` runs items conditionally
+
+## Example
+
+```ts
+import { Scene, Circle, Rect, sequence, on } from 'disclose-dsl';
+
+const scene = Scene(() => [
+  sequence(
+    Circle(48).fill('#f97316').scale({ from: 0, to: 1, duration: 600 }),
+    Rect(140, 80).fill('#0ea5e9').rotate({ from: 0, to: Math.PI / 8, duration: 600 })
+  ),
+  on('scene+1200', Circle(10).fill('#22c55e').move({ y: [-80, 80], duration: 900, loop: true })),
+]);
+```

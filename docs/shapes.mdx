@@ -1,0 +1,31 @@
+---
+id: shapes
+title: Shapes
+---
+
+Shapes are the building blocks of a scene. Each call returns a `ShapeBuilder` you can chain with modifiers.
+
+## Primitives
+
+- `Circle(radius)`
+- `Rect(width, height)`
+- `RoundedRect(width, height, radius)`
+- `Ellipse(rx, ry)`
+- `Line(points)`
+- `Path(points, closed?)`
+- `Polygon(points)`
+- `RegularPolygon(sides, radius)`
+- `Star(points, inner, outer)`
+- `Text(value, options)`
+- `Image(src, width?, height?)`
+
+## Example
+
+```ts
+import { Scene, Circle, Text } from 'disclose-dsl';
+
+const scene = Scene(() => [
+  Circle(64).fill('#0f172a').stroke({ color: '#ffffff', width: 4 }),
+  Text('DSL', { fontSize: 28, fontWeight: 700 }).fill('#ffffff'),
+]);
+```

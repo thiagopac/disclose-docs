@@ -1,0 +1,31 @@
+---
+id: modifiers
+title: Modifiers
+---
+
+Modifiers are chainable operations that animate or style a shape.
+
+## Common Modifiers
+
+- `fill(color | { from, to, duration, ... })`
+- `stroke({ color, width, dash, ... })`
+- `move({ x, y, duration, ... })`
+- `scale({ from, to, duration, ... })`
+- `rotate({ from, to, duration, ... })`
+- `opacity({ from, to, duration, ... })`
+- `trim({ from, to, duration, ... })`
+- `morph({ from, to, duration, ... })`
+
+## Example
+
+```ts
+import { Scene, Rect } from 'disclose-dsl';
+
+const scene = Scene(() => [
+  Rect(160, 90)
+    .fill('#22c55e')
+    .stroke({ color: '#0f172a', width: 3 })
+    .scale({ from: 0.8, to: 1.05, duration: 900, loop: true })
+    .rotate({ from: -0.1, to: 0.1, duration: 900, loop: true }),
+]);
+```

@@ -1,0 +1,50 @@
+---
+id: get-started
+title: Getting Started
+---
+
+## Install
+
+```bash
+npm install disclose-dsl
+```
+
+## Basic Usage
+
+```ts
+import { Scene, Circle, Rect, play } from 'disclose-dsl';
+
+const scene = Scene((t) => [
+  Circle(60)
+    .fill('#ff4d4f')
+    .move({ x: [-200, 200], duration: 2000, ease: 'easeInOut' })
+    .opacity({ from: 0, to: 1, duration: 800 }),
+
+  Rect(140, 90)
+    .fill('#2f54eb')
+    .scale({ from: 0.7, to: 1.1, duration: 1200, ease: 'easeOut' })
+    .rotate({ from: 0, to: Math.PI / 8, duration: 1200 }),
+]);
+
+const canvas = document.querySelector('#stage');
+if (!canvas) throw new Error('Canvas not found');
+
+play(canvas, scene);
+```
+
+## HTML + CDN
+
+```html
+<canvas id="stage" style="width: 800px; height: 400px;"></canvas>
+<script type="module">
+  import { Scene, Circle, Rect, play } from 'https://unpkg.com/disclose-dsl@0.1.0/dist/index.js';
+
+  const scene = Scene((t) => [
+    Circle(60).fill('#ff4d4f').move({ x: [-200, 200], duration: 2000 }),
+    Rect(140, 90).fill('#2f54eb').rotate({ from: 0, to: Math.PI / 8, duration: 1200 }),
+  ]);
+
+  const canvas = document.querySelector('#stage');
+  play(canvas, scene);
+</script>
+```
