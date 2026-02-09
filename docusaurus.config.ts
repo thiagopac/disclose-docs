@@ -38,7 +38,7 @@ const config: Config = {
         { to: '/play', label: 'Play', position: 'left', activeBasePath: '/play' },
         {
           href: 'https://github.com/thiagopac/disclose-docs',
-          label: 'GitHub',
+          className: 'navbar-github',
           position: 'right',
         },
       ],

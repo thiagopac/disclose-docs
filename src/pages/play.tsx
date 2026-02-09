@@ -18,6 +18,7 @@ const prelude = `const {
   RegularPolygon,
   RegularStar,
   Star,
+  Triangle,
   Text,
   Image,
   Arc,
@@ -42,12 +43,22 @@ function useQueryParam(name: string): string | null {
 }
 
 function resolveExample(id: string | null): { code: string; title: string; description: string } {
-  if (!id) return { code: examples[0].code, title: examples[0].title };
+  if (!id) {
+    return {
+      code: `Scene(() => [\n  \n])`,
+      title: 'Playground',
+      description: 'Start from an empty scene.',
+    };
+  }
   const foundDemo = demos.find((d) => d.id === id);
   if (foundDemo) return { code: foundDemo.code, title: foundDemo.title, description: foundDemo.description };
   const foundExample = examples.find((e) => e.id === id);
   if (foundExample) return { code: foundExample.code, title: foundExample.title, description: foundExample.description };
-  return { code: examples[0].code, title: examples[0].title, description: examples[0].description };
+  return {
+    code: `Scene(() => [\n  \n])`,
+    title: 'Playground',
+    description: 'Start from an empty scene.',
+  };
 }
 
 function PlayPage() {
@@ -139,7 +150,36 @@ function PlayPage() {
       console.warn = original.warn;
       console.error = original.error;
       if (!scene) throw new Error('Scene not defined. Create a `const scene = Scene(...)`.');
-      handleRef.current = lib.play(canvas, scene);
+      const safeScene = (t: number) => {
+        const out = scene(t);
+        if (!Array.isArray(out)) return [];
+        return out.filter((item) => {
+          if (!item) return false;
+          if (typeof (item as any).evaluate === 'function') return true;
+          return typeof (item as any).kind === 'string' && (item as any).transform;
+        });
+      };
+
+      const renderer = new lib.Renderer(canvas, safeScene);
+      const timeline = new lib.Timeline();
+      let raf = 0;
+      const tick = () => {
+        try {
+          renderer.render(timeline.now());
+        } catch (err) {
+          const message = err instanceof Error ? err.message : String(err);
+          setError(message);
+          setLogs((prev) => [...prev, `error ${message}`]);
+          return;
+        }
+        raf = requestAnimationFrame(tick);
+      };
+      raf = requestAnimationFrame(tick);
+      handleRef.current = {
+        stop: () => {
+          if (raf) cancelAnimationFrame(raf);
+        },
+      };
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       setError(message);

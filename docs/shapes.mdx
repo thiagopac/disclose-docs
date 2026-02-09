@@ -3,29 +3,301 @@ id: shapes
 title: Shapes
 ---
 
-Shapes are the building blocks of a scene. Each call returns a `ShapeBuilder` you can chain with modifiers.
+import { ShapeShowcase } from '@site/src/components/ShapeShowcase';
 
-## Primitives
+Shapes are the building blocks of a scene. Every shape returns a `ShapeBuilder` that can be styled and animated by chaining modifiers.
 
-- `Circle(radius)`
-- `Rect(width, height)`
-- `RoundedRect(width, height, radius)`
-- `Ellipse(rx, ry)`
-- `Line(points)`
-- `Path(points, closed?)`
-- `Polygon(points)`
-- `RegularPolygon(sides, radius)`
-- `Star(points, inner, outer)`
-- `Text(value, options)`
-- `Image(src, width?, height?)`
+## How Shapes Render
 
-## Example
+- Shapes are centered on the canvas by default. Use `at({ x, y })` or `move({ x, y })` to position them.
+- All sizes are in pixels. Angles are in radians.
+- Paths are drawn around the origin, then transformed by scale/rotate/move.
+
+## Primitive Shapes
+
+### Circle
+
+`Circle(radius)`
+
+<ShapeShowcase
+  title="Circle"
+  description="A perfect circle centered at the origin."
+  code={`Circle(60).fill('#0ea5e9').stroke({ color: '#0f172a', width: 4 })`}
+/>
+
+### Rect
+
+`Rect(width = 80, height = 80)`
+
+<ShapeShowcase
+  title="Rect"
+  description="Axis-aligned rectangle, centered at the origin."
+  code={`Rect(180, 100).fill('#111827').stroke({ color: '#f8fafc', width: 3 })`}
+/>
+
+### RoundedRect
+
+`RoundedRect(width = 120, height = 80, radius = 16)`
+
+`radius` can be a number or `{ tl, tr, br, bl }` for per-corner radii.
+
+<ShapeShowcase
+  title="RoundedRect"
+  description="Rounded corners for softer layouts or pill-like cards."
+  code={`RoundedRect(200, 110, { tl: 18, tr: 30, br: 12, bl: 24 }).fill('#22c55e')`}
+/>
+
+### Capsule
+
+`Capsule(width = 160, height = 60)`
+
+Uses the smallest dimension as the corner radius.
+
+<ShapeShowcase
+  title="Capsule"
+  description="A pill shape (rounded rect with max radius)."
+  code={`Capsule(220, 80).fill('#f97316')`}
+/>
+
+### Ellipse
+
+`Ellipse(width = 120, height = 80)`
+
+<ShapeShowcase
+  title="Ellipse"
+  description="Ellipse with x/y radii derived from width/height."
+  code={`Ellipse(200, 110).fill('#0f172a').stroke({ color: '#38bdf8', width: 4 })`}
+/>
+
+### Line
+
+`Line(from, to)`
+
+Creates an open path with two points.
+
+<ShapeShowcase
+  title="Line"
+  description="A simple line segment. Use stroke to make it visible."
+  code={`Line({ x: -120, y: 0 }, { x: 120, y: 0 })
+  .fill('rgba(0,0,0,0)')
+  .stroke({ color: '#22d3ee', width: 6 })`}
+/>
+
+### Path
+
+`Path(points, closed = true)`
+
+<ShapeShowcase
+  title="Path"
+  description="Arbitrary polyline or polygon. Set closed=false for open paths."
+  code={`Path([
+  { x: -120, y: 40 },
+  { x: -40, y: -60 },
+  { x: 60, y: 20 },
+  { x: 120, y: -40 },
+], false)
+  .fill('rgba(0,0,0,0)')
+  .stroke({ color: '#0ea5e9', width: 4 })`}
+/>
+
+### Polyline
+
+`Polyline(points)`
+
+A convenience for an open `Path`.
+
+### Polygon
+
+`Polygon(points, closed = true)`
+
+Identical to `Path`, but signals intent.
+
+### RegularPolygon
+
+`RegularPolygon(sides = 6, radius = 60, options?)`
+
+Options:
+- `rotation` (radians)
+
+<ShapeShowcase
+  title="RegularPolygon"
+  description="Evenly spaced polygon with optional rotation."
+  code={`RegularPolygon(6, 70, { rotation: Math.PI / 6 }).fill('#a855f7')`}
+/>
+
+### Star
+
+`Star(points = 5, outer = 80, inner = 40, options?)`
+
+Options:
+- `rotation` (radians)
+
+<ShapeShowcase
+  title="Star"
+  description="Classic star with outer/inner radii."
+  code={`Star(5, 90, 36).fill('#facc15')`}
+/>
+
+### RegularStar
+
+`RegularStar(points = 5, radius = 80, options?)`
+
+Options:
+- `innerRatio` (0..1)
+- `rotation` (radians)
+
+<ShapeShowcase
+  title="RegularStar"
+  description="Balanced star using innerRatio for symmetry."
+  code={`RegularStar(6, 85, { innerRatio: 0.45 }).fill('#f472b6')`}
+/>
+
+### Triangle
+
+`Triangle(width = 120, height = 100, options?)`
+
+Options:
+- `direction`: `up | down | left | right`
+- `rightAngle`: `topLeft | topRight | bottomLeft | bottomRight`
+
+<ShapeShowcase
+  title="Triangle"
+  description="Isosceles or right-angle triangles, oriented by direction."
+  code={`Triangle(140, 120, { direction: 'down' }).fill('#0f172a').stroke({ color: '#22d3ee', width: 4 })`}
+/>
+
+### Arc
+
+`Arc(radius = 80, startAngle = 0, endAngle = Math.PI / 2, options?)`
+
+Options:
+- `innerRadius`
+- `thickness`
+- `counterclockwise`
+
+If `thickness` is provided, innerRadius is computed as `radius - thickness`.
+
+<ShapeShowcase
+  title="Arc"
+  description="Arc with optional thickness for donut-like segments."
+  code={`Arc(80, 0, Math.PI * 1.3, { thickness: 18 }).fill('#38bdf8')`}
+/>
+
+### Ring
+
+`Ring(outer = 80, inner = 50)`
+
+<ShapeShowcase
+  title="Ring"
+  description="Donut ring using outer and inner radii."
+  code={`Ring(90, 55).fill('#0f172a').stroke({ color: '#38bdf8', width: 3 })`}
+/>
+
+### Pie
+
+`Pie(radius)`
+
+<ShapeShowcase
+  title="Pie"
+  description="Filled circle wedge (full pie). Use trim for partial segments."
+  code={`Pie(80).fill('#f97316').trim({ from: 0.7, to: 0.7, duration: 1 })`}
+/>
+
+### Spiral
+
+`Spiral(turns = 3, radius = 80, points = 200, options?)`
+
+Options:
+- `startRadius`
+- `rotation`
+- `clockwise` (default true)
+
+<ShapeShowcase
+  title="Spiral"
+  description="Open spiral polyline. Best paired with stroke."
+  code={`Spiral(3, 90, 220).stroke({ color: '#a3e635', width: 4 })`}
+/>
+
+### BezierPath
+
+`BezierPath(commands)`
+
+Commands:
+- `{ cmd: 'moveTo', x, y }`
+- `{ cmd: 'lineTo', x, y }`
+- `{ cmd: 'quadTo', cpx, cpy, x, y }`
+- `{ cmd: 'cubicTo', cp1x, cp1y, cp2x, cp2y, x, y }`
+- `{ cmd: 'close' }`
+
+<ShapeShowcase
+  title="BezierPath"
+  description="Precise vector paths with quad and cubic segments."
+  code={`BezierPath([
+  { cmd: 'moveTo', x: -120, y: 0 },
+  { cmd: 'cubicTo', cp1x: -40, cp1y: -80, cp2x: 40, cp2y: 80, x: 120, y: 0 },
+]).stroke({ color: '#22d3ee', width: 5 })`}
+/>
+
+### Text
+
+`Text(value, options?)`
+
+Options:
+- `font`
+- `fontSize` (default 24)
+- `fontFamily` (default "Georgia")
+- `fontWeight`
+- `fontStyle`
+- `lineHeight` (defaults to 1.2 * fontSize)
+- `maxWidth`
+- `wrap` (default false)
+- `align` (CanvasTextAlign, default `center`)
+- `baseline` (CanvasTextBaseline, default `middle`)
+- `letterSpacing` (default 0)
+
+<ShapeShowcase
+  title="Text"
+  description="Text layout with line wrapping, alignment and letter spacing."
+  code={`Text('Disclose', { fontSize: 54, fontWeight: 600, letterSpacing: 2 })
+  .fill('#f8fafc')
+  .stroke({ color: '#0ea5e9', width: 2 })`}
+/>
+
+### Image
+
+`Image(src, width?, height?)`
+
+Images are loaded asynchronously. If width/height are omitted, intrinsic size is used.
+
+<ShapeShowcase
+  title="Image"
+  description="Draws an image and optionally tints it using fill + fillMode."
+  code={`Image('https://placehold.co/320x200/png', 160, 120)
+  .fill('#0ea5e9')
+  .fillMode('screen')`}
+/>
+
+## Builder Helpers
+
+### Shape
+
+`Shape()` returns a path builder you can fill with points using `.path()` or `.paths()`.
+
+### Copy / every
+
+`Copy()` is used with `.every(interval, factory)` to spawn clones over time.
+
+Example:
 
 ```ts
-import { Scene, Circle, Text } from 'disclose-dsl';
-
-const scene = Scene(() => [
-  Circle(64).fill('#0f172a').stroke({ color: '#ffffff', width: 4 }),
-  Text('DSL', { fontSize: 28, fontWeight: 700 }).fill('#ffffff'),
-]);
+Circle(6)
+  .fill('#22d3ee')
+  .every(200, () => Copy().opacity({ from: 1, to: 0, duration: 800 }))
 ```
+
+## Shape Coordinates
+
+- Shapes are centered at `(0, 0)` by default.
+- `Rect`, `RoundedRect`, `Capsule`, `Ellipse`, `Image`, and `Text` are centered on their midpoints.
+- `Path`, `Polygon`, and `Polyline` use raw points as provided.
+- Use `.anchor()` to change the local anchor when rotating/scaling.

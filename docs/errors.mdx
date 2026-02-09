@@ -1,0 +1,76 @@
+---
+id: errors
+title: Errors & Diagnostics
+---
+
+Disclose DSL reports validation problems and runtime issues through `Diagnostics`.
+
+## Diagnostics API
+
+```ts
+import { Diagnostics } from 'disclose-dsl';
+
+Diagnostics.on((items) => {
+  console.log(items);
+});
+
+Diagnostics.clear();
+```
+
+Each diagnostic item has:
+
+- `level`: `error` or `warn`
+- `message`: short description
+- `detail`: optional extra info
+- `time`: timestamp in ms
+
+## Common Validation Messages
+
+These are emitted while evaluating shapes and modifiers:
+
+- `Arc radius must be > 0`
+- `Image src is required`
+- `Path should have at least 2 points`
+- `BezierPath has no commands`
+- `Compound path has no subpaths`
+- `Text value must be a string`
+- `Text lineHeight must be a number > 0`
+- `Text maxWidth must be a number`
+- `Text maxWidth must be > 0`
+- `Fill animation requires from/to`
+- `Stroke width must be a number or number animation spec`
+- `Stroke dash must be an array of numbers`
+- `Move x must be [number, number]`
+- `Move y must be [number, number]`
+- `Curve.from must be {x,y} numbers`
+- `Curve.control must be {x,y} numbers`
+- `Curve.to must be {x,y} numbers`
+- `Velocity x must be number`
+- `Velocity y must be number`
+- `Acceleration x must be number`
+- `Acceleration y must be number`
+- `Spring x must be [number, number]`
+- `Spring y must be [number, number]`
+- `Expected number or number animation spec`
+- `Duration must be a number`
+- `Duration must be > 0`
+- `Delay must be a number`
+- `Repeat delay must be a number`
+- `Color looks invalid`
+- `Gradient stop position should be between 0 and 1`
+- `Gradient stop position must be number or number animation spec`
+- `Text() expects a string`
+- `Text fontSize must be a number > 0`
+- `Text fontFamily must be string`
+- `Text fontWeight must be string or number`
+- `Text fontStyle must be string`
+
+## Runtime Errors
+
+Runtime errors are normalized and reported as:
+
+- `Syntax error in DSL`
+- `Undefined identifier in DSL. Did you forget quotes around a string?`
+- `Runtime error`
+
+If a runtime error occurs while rendering, the renderer will skip drawing that frame and store the diagnostic.

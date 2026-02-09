@@ -3,25 +3,161 @@ id: flow
 title: Flow
 ---
 
-Flow helpers let you compose multiple items in time.
+import { ShapeShowcase } from '@site/src/components/ShapeShowcase';
+
+Flow helpers let you compose multiple items in time. They can contain shapes, arrays of shapes, or functions that return shapes.
 
 ## Helpers
 
-- `sequence(a, b, c)` plays items back-to-back
-- `parallel(a, b, c)` plays items together
-- `on(start, ...items)` schedules items at a specific time
-- `when(predicate, ...items)` runs items conditionally
+### sequence
 
-## Example
+`sequence(a, b, c)` plays items back-to-back.
 
-```ts
-import { Scene, Circle, Rect, sequence, on } from 'disclose-dsl';
+Duration is computed from each item by inspecting its modifiers. If a shape has no animated modifiers, its duration is `0`.
 
-const scene = Scene(() => [
+<ShapeShowcase
+  title="sequence"
+  description="Items play one after another."
+  code={`Scene(() => [
   sequence(
-    Circle(48).fill('#f97316').scale({ from: 0, to: 1, duration: 600 }),
-    Rect(140, 80).fill('#0ea5e9').rotate({ from: 0, to: Math.PI / 8, duration: 600 })
+    Circle(36)
+      .fill('#f97316')
+      .scale({ from: 0, to: 1, duration: 600, ease: 'easeOut' }),
+    Rect(120, 70)
+      .fill('#0ea5e9')
+      .rotate({ from: 0, to: Math.PI / 8, duration: 600, ease: 'easeOut' }),
+    Triangle(120, 90, { direction: 'down' })
+      .fill('#22c55e')
+      .opacity({ from: 0, to: 1, duration: 500 })
   ),
-  on('scene+1200', Circle(10).fill('#22c55e').move({ y: [-80, 80], duration: 900, loop: true })),
-]);
-```
+])`}
+  animate
+/>
+
+### parallel
+
+`parallel(a, b, c)` plays items together.
+
+<ShapeShowcase
+  title="parallel"
+  description="Items run at the same time."
+  code={`Scene(() => [
+  parallel(
+    Circle(50).fill('#0f172a').opacity({ from: 0.4, to: 1, duration: 900, loop: true }),
+    Rect(120, 70).fill('#38bdf8').rotate({ from: -0.2, to: 0.2, duration: 900, loop: true }),
+    Star(5, 70, 30).fill('#facc15').scale({ from: 0.8, to: 1.1, duration: 900, loop: true })
+  ),
+])`}
+  animate
+/>
+
+### on
+
+`on(start, ...items)` schedules items at a specific `TimeRef`.
+
+<ShapeShowcase
+  title="on"
+  description="Schedule a burst after scene start."
+  code={`Scene(() => [
+  Circle(40)
+    .fill('#0f172a')
+    .opacity({ from: 0.2, to: 0.8, duration: 800, loop: true }),
+  on('scene+600',
+    Star(5, 60, 26)
+      .fill('#22d3ee')
+      .scale({ from: 0, to: 1.2, duration: 500 })
+      .opacity({ from: 1, to: 0, duration: 600 })
+  ),
+])`}
+  animate
+/>
+
+### when
+
+`when(predicate, ...items)` runs items conditionally. The predicate receives current time in ms.
+
+<ShapeShowcase
+  title="when"
+  description="Show a label only after time > 1200ms."
+  code={`Scene(() => [
+  Circle(36).fill('#f97316').move({ x: [-120, 120], duration: 1200, loop: true }),
+  when((t) => t > 1200,
+    Text('GO', { fontSize: 44, fontWeight: 700 })
+      .fill('#ffffff')
+      .opacity({ from: 0, to: 1, duration: 400 })
+      .at({ x: 0, y: 70 })
+  ),
+])`}
+  animate
+/>
+
+## Complex Examples
+
+<ShapeShowcase
+  title="Flow Composition"
+  description="Sequence plus scheduled secondary motion."
+  code={`Scene(() => [
+  sequence(
+    Circle(42)
+      .fill('#f97316')
+      .scale({ from: 0, to: 1, duration: 600, ease: 'easeOut' }),
+    Rect(140, 80)
+      .fill('#0ea5e9')
+      .rotate({ from: 0, to: Math.PI / 8, duration: 600 })
+  ),
+  on('scene+1200',
+    Circle(10)
+      .fill('#22c55e')
+      .move({ y: [-80, 80], duration: 900, loop: true })
+  ),
+])`}
+  animate
+/>
+
+<ShapeShowcase
+  title="Nested Flow"
+  description="Parallel groups inside a timed sequence."
+  code={`Scene(() => [
+  sequence(
+    () => [
+      Circle(28)
+        .fill('#38bdf8')
+        .scale({ from: 0.4, to: 1, duration: 600, loop: true })
+        .at({ x: -40, y: 0 }),
+      Circle(10)
+        .fill('#facc15')
+        .move({ y: [-40, 40], duration: 600, loop: true })
+        .at({ x: 40, y: 0 }),
+    ],
+    () => [
+      Rect(120, 70)
+        .fill('#0f172a')
+        .opacity({ from: 0.4, to: 1, duration: 600, loop: true }),
+      Text('Flow', { fontSize: 28, fontWeight: 600 })
+        .fill('#ffffff'),
+    ]
+  )
+])`}
+  animate
+/>
+
+<ShapeShowcase
+  title="Conditional Burst"
+  description="Conditional burst + scheduled echo."
+  code={`Scene(() => [
+  Circle(34)
+    .fill('#0f172a')
+    .scale({ from: 0.9, to: 1.1, duration: 700, loop: true, ease: 'easeInOut' }),
+  when((t) => t > 1000,
+    Star(5, 60, 28)
+      .fill('#22d3ee')
+      .opacity({ from: 1, to: 0, duration: 600, loop: true })
+  ),
+  on('scene+1400',
+    Circle(8)
+      .fill('#a3e635')
+      .move({ x: [-60, 60], duration: 900, loop: true, ease: 'easeInOut' })
+  )
+])`}
+  animate
+/>

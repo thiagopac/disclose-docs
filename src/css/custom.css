@@ -235,6 +235,26 @@ html[data-theme='dark'] #play-canvas {
   background: #ffffff;
 }
 
+.navbar-github {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0;
+}
+
+.navbar-github::before {
+  content: '';
+  display: block;
+  width: 20px;
+  height: 20px;
+  background: currentColor;
+  mask: url('/img/github.svg') no-repeat center / contain;
+  -webkit-mask: url('/img/github.svg') no-repeat center / contain;
+}
+
 .play-error {
   padding: 0.75rem 1rem;
   background: #fee2e2;
@@ -286,6 +306,65 @@ html[data-theme='dark'] .examples-card {
 
 @media (max-width: 980px) {
   .play-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.shape-showcase {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(260px, 1.4fr);
+  gap: 16px;
+  align-items: stretch;
+  padding: 12px;
+  border: 1px solid var(--dsl-border);
+  border-radius: 12px;
+  background: var(--dsl-bg);
+  margin: 1rem 0 1.5rem;
+}
+
+.shape-canvas {
+  border: 1px solid var(--dsl-border);
+  border-radius: 10px;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+html[data-theme='dark'] .shape-canvas {
+  background: #0f172a;
+}
+
+.shape-canvas canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.shape-showcase-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ifm-color-emphasis-900);
+  margin-bottom: 0.35rem;
+}
+
+.shape-showcase-desc {
+  color: var(--ifm-color-emphasis-700);
+  margin-bottom: 0.75rem;
+}
+
+.shape-showcase-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ifm-color-emphasis-600);
+  margin-bottom: 0.4rem;
+}
+
+.shape-showcase-body pre {
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .shape-showcase {
     grid-template-columns: 1fr;
   }
 }

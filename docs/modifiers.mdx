@@ -3,29 +3,389 @@ id: modifiers
 title: Modifiers
 ---
 
-Modifiers are chainable operations that animate or style a shape.
+import { ShapeShowcase } from '@site/src/components/ShapeShowcase';
 
-## Common Modifiers
+Modifiers are chainable operations that animate or style a shape. They return a new `ShapeBuilder` so you can keep chaining.
 
-- `fill(color | { from, to, duration, ... })`
-- `stroke({ color, width, dash, ... })`
-- `move({ x, y, duration, ... })`
-- `scale({ from, to, duration, ... })`
-- `rotate({ from, to, duration, ... })`
-- `opacity({ from, to, duration, ... })`
-- `trim({ from, to, duration, ... })`
-- `morph({ from, to, duration, ... })`
+## Timing Model
 
-## Example
+Most animated modifiers accept the same timing fields:
 
-```ts
-import { Scene, Rect } from 'disclose-dsl';
+- `duration` (ms, required)
+- `start` (`number` or `TimeRef` like `scene+200` or `prev.end+150`)
+- `delay` (ms)
+- `repeatDelay` (ms)
+- `loop` (boolean)
+- `ease` (`linear`, `easeIn`, `easeOut`, `easeInOut`, or `{ type: 'cubicBezier', x1, y1, x2, y2 }`)
+- `keyframes` (array of `{ time, value }` with `time` in ms)
 
-const scene = Scene(() => [
-  Rect(160, 90)
-    .fill('#22c55e')
-    .stroke({ color: '#0f172a', width: 3 })
-    .scale({ from: 0.8, to: 1.05, duration: 900, loop: true })
-    .rotate({ from: -0.1, to: 0.1, duration: 900, loop: true }),
-]);
-```
+If `keyframes` is provided, the last keyframe time defines the duration unless you also set `duration`.
+
+## Color & Opacity
+
+### fill
+
+<ShapeShowcase
+  title="fill"
+  description="Solid fill or animated color transitions."
+  code={`Circle(48)
+  .fill({ from: '#0ea5e9', to: '#22c55e', duration: 1200, loop: true, ease: 'easeInOut' })`}
+  animate
+/>
+
+### gradient
+
+<ShapeShowcase
+  title="gradient"
+  description="Linear or radial gradients with stops."
+  code={`Rect(180, 100)
+  .gradient({
+    type: 'linear',
+    from: { x: -90, y: -50 },
+    to: { x: 90, y: 50 },
+    stops: [
+      { pos: 0, color: '#0ea5e9' },
+      { pos: 1, color: '#22c55e' },
+    ],
+  })`}
+/>
+
+### stroke
+
+<ShapeShowcase
+  title="stroke"
+  description="Outline with width, dash patterns, and color."
+  code={`Path([
+  { x: -80, y: -40 },
+  { x: 80, y: 40 },
+], false)
+  .fill('rgba(0,0,0,0)')
+  .stroke({ color: '#22d3ee', width: 6, dash: [8, 6] })`}
+/>
+
+### opacity
+
+<ShapeShowcase
+  title="opacity"
+  description="Fade in or out over time."
+  code={`Rect(140, 80)
+  .fill('#0f172a')
+  .opacity({ from: 0, to: 1, duration: 600, loop: true })`}
+  animate
+/>
+
+### shadow
+
+<ShapeShowcase
+  title="shadow"
+  description="Drop shadow with blur and offsets."
+  code={`Rect(160, 90)
+  .fill('#ffffff')
+  .shadow({ color: 'rgba(0,0,0,0.2)', blur: 10, offsetX: 0, offsetY: 8 })`}
+/>
+
+### blendMode
+
+<ShapeShowcase
+  title="blendMode"
+  description="Controls canvas compositing."
+  code={`Circle(60)
+  .fill('#22d3ee')
+  .blendMode('screen')`}
+/>
+
+### fillMode
+
+<ShapeShowcase
+  title="fillMode"
+  description="Tints images with fill colors."
+  code={`Image('https://placehold.co/320x200/png', 160, 120)
+  .fill('#0ea5e9')
+  .fillMode('multiply')`}
+/>
+
+## Position & Motion
+
+### at
+
+<ShapeShowcase
+  title="at"
+  description="Sets an absolute position in local space."
+  code={`Circle(20)
+  .fill('#22c55e')
+  .at({ x: -120, y: 40 })`}
+/>
+
+### move
+
+<ShapeShowcase
+  title="move"
+  description="Linear motion between two points."
+  code={`Circle(30)
+  .fill('#0ea5e9')
+  .move({ x: [-120, 120], duration: 1200, loop: true, ease: 'easeInOut' })`}
+  animate
+/>
+
+### curve
+
+<ShapeShowcase
+  title="curve"
+  description="Move along a quadratic curve."
+  code={`Circle(18)
+  .fill('#f97316')
+  .curve({
+    from: { x: -120, y: 60 },
+    control: { x: 0, y: -120 },
+    to: { x: 120, y: 60 },
+    duration: 1400,
+    loop: true,
+  })`}
+  animate
+/>
+
+### pathMotion
+
+<ShapeShowcase
+  title="pathMotion"
+  description="Follow a custom path."
+  code={`Circle(14)
+  .fill('#38bdf8')
+  .pathMotion({
+    path: [
+      { x: -120, y: -40 },
+      { x: 0, y: 60 },
+      { x: 120, y: -40 },
+    ],
+    duration: 1200,
+    loop: true,
+  })`}
+  animate
+/>
+
+### orientToPath
+
+<ShapeShowcase
+  title="orientToPath"
+  description="Rotate to align with the path tangent."
+  code={`Triangle(60, 40, { direction: 'right' })
+  .fill('#0f172a')
+  .pathMotion({
+    path: [
+      { x: -120, y: -40 },
+      { x: 0, y: 60 },
+      { x: 120, y: -40 },
+    ],
+    duration: 1200,
+    loop: true,
+  })
+  .orientToPath({ offset: Math.PI / 2 })`}
+  animate
+/>
+
+### velocity
+
+<ShapeShowcase
+  title="velocity"
+  description="Constant velocity motion."
+  code={`Circle(10)
+  .fill('#a3e635')
+  .velocity({ x: 0.08, y: 0.02, duration: 2000, loop: true })`}
+  animate
+/>
+
+### acceleration
+
+<ShapeShowcase
+  title="acceleration"
+  description="Constant acceleration."
+  code={`Circle(10)
+  .fill('#f472b6')
+  .acceleration({ x: 0.0002, y: 0.0004, duration: 2000, loop: true })`}
+  animate
+/>
+
+### spring
+
+<ShapeShowcase
+  title="spring"
+  description="Spring easing between two points."
+  code={`Circle(28)
+  .fill('#facc15')
+  .spring({ x: [-80, 80], duration: 1200, loop: true, stiffness: 160, damping: 18, mass: 1 })`}
+  animate
+/>
+
+## Transform
+
+### scale
+
+<ShapeShowcase
+  title="scale"
+  description="Uniform scaling."
+  code={`Rect(120, 70)
+  .fill('#0ea5e9')
+  .scale({ from: 0.8, to: 1.1, duration: 900, loop: true, ease: 'easeInOut' })`}
+  animate
+/>
+
+### scaleX / scaleY
+
+<ShapeShowcase
+  title="scaleX / scaleY"
+  description="Independent axis scaling."
+  code={`Rect(120, 70)
+  .fill('#22c55e')
+  .scaleX({ from: 0.6, to: 1.2, duration: 900, loop: true, ease: 'easeInOut' })
+  .scaleY({ from: 1.2, to: 0.6, duration: 900, loop: true, ease: 'easeInOut' })`}
+  animate
+/>
+
+### rotate
+
+<ShapeShowcase
+  title="rotate"
+  description="Rotate around the anchor."
+  code={`Rect(100, 100)
+  .fill('#0f172a')
+  .rotate({ from: 0, to: Math.PI * 2, duration: 2000, loop: true, ease: 'linear' })`}
+  animate
+/>
+
+### skewX / skewY
+
+<ShapeShowcase
+  title="skewX / skewY"
+  description="Skew along an axis."
+  code={`Rect(120, 70)
+  .fill('#38bdf8')
+  .skewX({ from: -0.3, to: 0.3, duration: 1000, loop: true, ease: 'easeInOut' })`}
+  animate
+/>
+
+### flip
+
+<ShapeShowcase
+  title="flip"
+  description="Cosine-based flip on axis."
+  code={`Rect(120, 70)
+  .fill('#f97316')
+  .flip({ from: 0, to: Math.PI, duration: 1200, loop: true, axis: 'y' })`}
+  animate
+/>
+
+### anchor
+
+<ShapeShowcase
+  title="anchor"
+  description="Change transform pivot."
+  code={`Rect(160, 100)
+  .fill('#111827')
+  .anchor('topLeft')
+  .rotate({ from: 0, to: Math.PI / 8, duration: 800, loop: true })`}
+  animate
+/>
+
+## Shape-Specific
+
+### trim
+
+<ShapeShowcase
+  title="trim"
+  description="Trim a path by percentage."
+  code={`Circle(60)
+  .fill('rgba(0,0,0,0)')
+  .stroke({ color: '#22d3ee', width: 6 })
+  .trim({ from: 0, to: 0.75, duration: 1200, loop: true })`}
+  animate
+/>
+
+### morph
+
+<ShapeShowcase
+  title="morph"
+  description="Morph between compatible shapes."
+  code={`Rect(120, 80)
+  .fill('#a855f7')
+  .morph({ width: 120, height: 80 }, { width: 200, height: 60 }, 1200, { loop: true })`}
+  animate
+/>
+
+### clip
+
+<ShapeShowcase
+  title="clip"
+  description="Clip a shape using another shape."
+  code={`Circle(60)
+  .fill('#22c55e')
+  .clip(Rect(120, 80).rotate({ from: 0, to: Math.PI / 8, duration: 1200, loop: true }))`}
+  animate
+/>
+
+### textPath
+
+<ShapeShowcase
+  title="textPath"
+  description="Render text along a smooth Bezier path."
+  code={`Text('Disclose', { fontSize: 30, fontWeight: 600, letterSpacing: 1 })
+  .fill('#0ea5e9')
+  .textPath({
+    path: BezierPath([
+      { cmd: 'moveTo', x: -140, y: 10 },
+      { cmd: 'quadTo', cpx: -70, cpy: -40, x: 0, y: 0 },
+      { cmd: 'quadTo', cpx: 70, cpy: 40, x: 140, y: 10 },
+    ]),
+    align: 'center',
+  })`}
+/>
+
+## Ordering & Time
+
+### zIndex
+
+<ShapeShowcase
+  title="zIndex"
+  description="Higher zIndex draws on top."
+  code={`Scene(() => [
+  Circle(60).fill('#0f172a').zIndex(1),
+  Circle(40).fill('#38bdf8').zIndex(2),
+])`}
+/>
+
+### timeScale
+
+<ShapeShowcase
+  title="timeScale"
+  description="Speed up or slow down a shape's time."
+  code={`Circle(20)
+  .fill('#22d3ee')
+  .timeScale(2)
+  .move({ x: [-60, 60], duration: 600, loop: true })`}
+  animate
+/>
+
+## Chained Examples
+
+<ShapeShowcase
+  title="Chained Modifiers"
+  description="Style, motion, and timing combined."
+  code={`Rect(180, 100)
+  .fill('#0f172a')
+  .stroke({ color: '#ffffff', width: 2 })
+  .shadow({ color: 'rgba(0,0,0,0.35)', blur: 12, offsetY: 10 })
+  .rotate({ from: -0.08, to: 0.08, duration: 1200, loop: true, ease: 'easeInOut' })
+  .scale({ from: 0.96, to: 1.02, duration: 1200, loop: true, ease: 'easeInOut' })
+  .opacity({ from: 0.7, to: 1, duration: 1200, loop: true })`}
+  animate
+/>
+
+<ShapeShowcase
+  title="Chained Motion"
+  description="Multiple motion modifiers stacked together."
+  code={`Circle(28)
+  .fill('#22c55e')
+  .move({ x: [-140, 140], duration: 1800, loop: true, ease: 'easeInOut' })
+  .scale({ from: 0.8, to: 1.1, duration: 900, loop: true, ease: 'easeInOut' })
+  .opacity({ from: 0.5, to: 1, duration: 900, loop: true, ease: 'easeInOut' })`}
+  animate
+/>

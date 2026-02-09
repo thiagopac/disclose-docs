@@ -1,0 +1,63 @@
+---
+id: runtime
+title: Runtime & Timeline
+---
+
+The runtime is made of three parts:
+
+- `Renderer` draws the scene to a canvas at a given time.
+- `Timeline` manages time, play/pause, and time scaling.
+- `play()` wires a scene to a canvas and advances it every frame.
+
+## play()
+
+```ts
+import { Scene, Circle, play } from 'disclose-dsl';
+
+const scene = Scene(() => [
+  Circle(40)
+    .fill('#22c55e')
+    .move({ x: [-120, 120], duration: 1200, loop: true }),
+]);
+
+const canvas = document.querySelector('#stage');
+const handle = play(canvas, scene);
+
+// later
+handle.stop();
+```
+
+`play()` returns `{ renderer, timeline, stop }`.
+
+## Renderer
+
+```ts
+import { Renderer } from 'disclose-dsl';
+
+const renderer = new Renderer(canvas, scene);
+renderer.render(0); // time in ms
+```
+
+## Timeline
+
+```ts
+import { Timeline } from 'disclose-dsl';
+
+const timeline = new Timeline();
+
+timeline.now();
+timeline.pause();
+timeline.play();
+timeline.seek(1200);
+timeline.scrub(2400);
+timeline.setDuration(4000);
+timeline.setTimeScale(0.5);
+```
+
+- `now()` returns the current time in ms.
+- `pause()` freezes time at the current position.
+- `play()` resumes from the current position.
+- `seek(ms)` jumps to a time.
+- `scrub(ms)` jumps and pauses.
+- `setDuration(ms | null)` clamps time to the given duration.
+- `setTimeScale(value)` multiplies time speed.

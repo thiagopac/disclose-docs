@@ -8,6 +8,8 @@ const sidebars: SidebarsConfig = {
     'modifiers',
     'time',
     'flow',
+    'errors',
+    'runtime',
   ],
 };
 

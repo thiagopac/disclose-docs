@@ -4,18 +4,40 @@ title: Disclose DSL
 slug: /
 ---
 
-Disclose DSL is an experimental, declarative motion language for composing scenes, shapes, and timelines. The API is fluent and compact, so you can build motion quickly without boilerplate.
+Disclose DSL is a declarative motion language for composing scenes, shapes, and timelines. It’s built to make motion design feel like assembling building blocks: you describe what should exist, and the engine handles drawing, timing, and orchestration.
+
+**Positioning**
+- **Solves:** Rapid motion prototyping without a full animation toolchain; consistent, reusable motion; programmable scenes that stay readable.
+- **Is:** A compact 2D motion DSL with a canvas renderer and a timeline-driven runtime; framework-agnostic.
+- **Is not:** A visual timeline editor, a 3D engine, or a full physics simulator.
 
 **Highlights**
 - Compose scenes with a single `Scene` function
 - Build geometry from primitives (circle, rect, path, polygon, text)
 - Chain universal modifiers (`fill`, `stroke`, `move`, `scale`, `rotate`, `opacity`)
 - Orchestrate time with `sequence`, `parallel`, `on`, and `when`
+- Inspect errors and warnings through `Diagnostics`
+
+**Quick Start**
+
+```ts
+import { Scene, Circle, play } from 'disclose-dsl';
+
+const scene = Scene(() => [
+  Circle(60).fill('#0ea5e9').move({ x: [-200, 200], duration: 1600, loop: true }),
+]);
+
+const canvas = document.querySelector('#stage');
+if (canvas) play(canvas, scene);
+```
 
 Start here:
 - [Getting Started](./get-started)
 - [Shapes](./shapes)
 - [Modifiers](./modifiers)
-- [Time & Flow](./time)
+- [Time](./time)
+- [Flow](./flow)
+- [Errors & Diagnostics](./errors)
+- [Runtime & Timeline](./runtime)
 
 Want to try it live? Visit the [Playground](/play).

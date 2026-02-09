@@ -3,21 +3,157 @@ id: time
 title: Time
 ---
 
-Most animations accept a `duration` and optional timing controls.
+import { ShapeShowcase } from '@site/src/components/ShapeShowcase';
+
+Disclose DSL uses milliseconds for all timing fields. Time is passed into `Scene` as `t` and also used internally by modifiers.
 
 ## Time References
 
 You can schedule modifiers using `start` with numeric values or string references:
 
 - `scene+200` starts 200ms after scene start
+- `scene-150` starts 150ms before scene start
 - `prev.end+150` starts 150ms after the previous modifier ends
 
-```ts
-import { Scene, Circle } from 'disclose-dsl';
+<ShapeShowcase
+  title="TimeRef"
+  description="Chained modifiers using prev.end for scheduling."
+  code={`Circle(40)
+  .fill('#0ea5e9')
+  .move({ x: [-120, 120], duration: 600, loop: true })
+  .opacity({ from: 0, to: 1, duration: 400, start: 'prev.end+500', loop: true })`}
+  animate
+/>
 
-const scene = Scene(() => [
-  Circle(40)
-    .move({ x: [-120, 120], duration: 600 })
-    .opacity({ from: 0, to: 1, duration: 400, start: 'prev.end+100' }),
-]);
-```
+## Duration, Delay, Loop
+
+<ShapeShowcase
+  title="Delay + Loop"
+  description="Delay before start, then loop with repeatDelay."
+  code={`Rect(120, 70)
+  .fill('#22c55e')
+  .scale({ from: 0.6, to: 1.1, duration: 700, loop: true, delay: 200, repeatDelay: 200, ease: 'easeInOut' })`}
+  animate
+/>
+
+## Easing
+
+<ShapeShowcase
+  title="Easing"
+  description="easeInOut vs linear on rotation."
+  code={`Scene(() => [
+  Rect(80, 80)
+    .fill('#0f172a')
+    .rotate({ from: 0, to: Math.PI * 2, duration: 1600, loop: true, ease: 'linear' })
+    .at({ x: -70, y: 0 }),
+  Rect(80, 80)
+    .fill('#38bdf8')
+    .rotate({ from: 0, to: Math.PI * 2, duration: 1600, loop: true, ease: 'easeInOut' })
+    .at({ x: 70, y: 0 }),
+])`}
+  animate
+/>
+
+## Keyframes
+
+<ShapeShowcase
+  title="Keyframes"
+  description="Explicit motion path via keyframes."
+  code={`Circle(16)
+  .fill('#f97316')
+  .move({
+    duration: 1600,
+    loop: true,
+    keyframes: [
+      { time: 0, x: -120, y: 0 },
+      { time: 400, x: -40, y: -50 },
+      { time: 800, x: 40, y: 30 },
+      { time: 1200, x: 120, y: -10 },
+      { time: 1600, x: -120, y: 0 },
+    ],
+  })`}
+  animate
+/>
+
+## Scene Time Scale
+
+<ShapeShowcase
+  title="Scene timeScale"
+  description="Scene timeScale slows all animation in the scene."
+  code={`Scene({ timeScale: 0.6 }, () => [
+  Circle(24)
+    .fill('#22d3ee')
+    .move({ x: [-120, 120], duration: 900, loop: true, ease: 'easeInOut' }),
+])`}
+  animate
+/>
+
+## Per-Shape Time Scale
+
+<ShapeShowcase
+  title="timeScale"
+  description="Two shapes with different local time scales."
+  code={`Scene(() => [
+  Circle(18)
+    .fill('#a3e635')
+    .timeScale(0.6)
+    .move({ x: [-120, 120], duration: 900, loop: true, ease: 'easeInOut' })
+    .at({ x: 0, y: -30 }),
+  Circle(18)
+    .fill('#f472b6')
+    .timeScale(1.6)
+    .move({ x: [-120, 120], duration: 900, loop: true, ease: 'easeInOut' })
+    .at({ x: 0, y: 30 }),
+])`}
+  animate
+/>
+
+## Complex Examples
+
+<ShapeShowcase
+  title="Complex Timing 1"
+  description="Staggered timing with prev.end, delays, and easing."
+  code={`Scene(() => [
+  Rect(160, 90)
+    .fill('#0f172a')
+    .stroke({ color: '#ffffff', width: 2 })
+    .scale({ from: 0.7, to: 1, duration: 600, ease: 'easeOut' }),
+  Circle(12)
+    .fill('#22c55e')
+    .move({ x: [-120, 120], duration: 900, loop: true, ease: 'easeInOut', start: 'scene+200' })
+    .opacity({ from: 0, to: 1, duration: 300, start: 'scene+200' }),
+  Text('Time', { fontSize: 28, fontWeight: 600 })
+    .fill({ from: '#94a3b8', to: '#ffffff', duration: 800, start: 'prev.end+150' })
+    .opacity({ from: 0, to: 1, duration: 800, start: 'prev.end+150' })
+    .at({ x: 0, y: 70 }),
+])`}
+  animate
+/>
+
+<ShapeShowcase
+  title="Complex Timing 2"
+  description="Keyframes + loop + timeScale together."
+  code={`Scene(() => [
+  Circle(16)
+    .fill('#38bdf8')
+    .timeScale(1.5)
+    .move({
+      duration: 2000,
+      loop: true,
+      ease: 'easeInOut',
+      keyframes: [
+        { time: 0, x: -130, y: 0 },
+        { time: 500, x: -40, y: -60 },
+        { time: 1000, x: 40, y: 50 },
+        { time: 1500, x: 130, y: -20 },
+        { time: 2000, x: -130, y: 0 },
+      ],
+    }),
+  Rect(140, 70)
+    .fill('#111827')
+    .opacity({ from: 0.2, to: 0.9, duration: 1000, loop: true, ease: 'easeInOut', delay: 200 })
+    .rotate({ from: -0.05, to: 0.05, duration: 1000, loop: true, ease: 'easeInOut', delay: 200 })
+    .at({ x: 0, y: 80 }),
+])`}
+  animate
+/>
