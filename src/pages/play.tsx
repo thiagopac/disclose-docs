@@ -63,6 +63,7 @@ function resolveExample(id: string | null): { code: string; title: string; descr
 
 function PlayPage() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const gridRef = useRef<HTMLDivElement | null>(null);
   const handleRef = useRef<{ stop: () => void } | null>(null);
   const [code, setCode] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -95,24 +96,24 @@ function PlayPage() {
   }, []);
 
   useEffect(() => {
-    const onMove = (event: MouseEvent) => {
+    const onMove = (event: PointerEvent) => {
       if (!dragRef.current) return;
-      const grid = document.querySelector('.play-grid') as HTMLElement | null;
+      const grid = gridRef.current;
       if (!grid) return;
       const rect = grid.getBoundingClientRect();
       const next = ((event.clientX - rect.left) / rect.width) * 100;
-      const clamped = Math.min(70, Math.max(30, next));
+      const clamped = Math.min(78, Math.max(22, next));
       setSplit(clamped);
     };
     const onUp = () => {
       dragRef.current = false;
       document.body.classList.remove('is-dragging');
     };
-    window.addEventListener('mousemove', onMove);
-    window.addEventListener('mouseup', onUp);
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
     return () => {
-      window.removeEventListener('mousemove', onMove);
-      window.removeEventListener('mouseup', onUp);
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
     };
   }, []);
 
@@ -197,7 +198,7 @@ function PlayPage() {
           </div>
           <button className="play-run" onClick={() => runCode(code)}>Run</button>
         </div>
-        <div className="play-grid" style={{ gridTemplateColumns: `${split}% 12px ${100 - split}%` }}>
+        <div ref={gridRef} className="play-grid" style={{ gridTemplateColumns: `${split}% 12px ${100 - split}%` }}>
           <div className="play-left">
             <div className="play-editor">
               <CodeEditor value={code} onChange={setCode} />
@@ -219,7 +220,8 @@ function PlayPage() {
             className="play-divider"
             role="separator"
             aria-orientation="vertical"
-            onMouseDown={() => {
+            onPointerDown={(event) => {
+              event.preventDefault();
               dragRef.current = true;
               document.body.classList.add('is-dragging');
             }}
