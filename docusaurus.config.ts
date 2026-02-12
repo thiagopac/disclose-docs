@@ -1,6 +1,8 @@
 import { themes as prismThemes } from 'prism-react-renderer';
 import type { Config } from '@docusaurus/types';
 
+const showDemosMenu = process.env.NODE_ENV === 'development' || process.env.SHOW_DEMOS === '1';
+
 const config: Config = {
   title: 'Disclose DSL',
   tagline: 'A fluent, declarative DSL for animation and motion design',
@@ -33,8 +35,11 @@ const config: Config = {
     navbar: {
       title: 'Disclose DSL',
       items: [
-        { to: '/', label: 'Docs', position: 'left', activeBaseRegex: '^/disclose-docs/(?!play|examples)' },
+        { to: '/', label: 'Docs', position: 'left', activeBaseRegex: '^/disclose-docs/(?!play|examples|demos)' },
         { to: '/examples', label: 'Examples', position: 'left', activeBasePath: '/examples' },
+        ...(showDemosMenu
+          ? [{ to: '/demos', label: 'Demos', position: 'left', activeBasePath: '/demos' as const }]
+          : []),
         { to: '/play', label: 'Play', position: 'left', activeBasePath: '/play' },
         {
           href: 'https://github.com/thiagopac/disclose-docs',
@@ -58,6 +63,7 @@ const config: Config = {
           title: 'More',
           items: [
             { label: 'Examples', to: '/examples' },
+            { label: 'Demos', to: '/demos' },
             { label: 'Play', to: '/play' },
             { label: 'GitHub', href: 'https://github.com/thiagopac/disclose-docs' },
           ],

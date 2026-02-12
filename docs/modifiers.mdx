@@ -288,6 +288,21 @@ If `keyframes` is provided, the last keyframe time defines the duration unless y
 
 ## Shape-Specific
 
+### distort
+
+<ShapeShowcase
+  title="distort"
+  description="Warp path corners with bilinear corner offsets. Works with Rect, Path, and Compound paths."
+  code={`Rect(180, 110)
+  .fill('#0f172a')
+  .distort({
+    tl: { x: -20, y: 0 },
+    tr: { x: -44, y: 16 },
+    br: { x: -8, y: 0 },
+    bl: { x: 6, y: -8 },
+  })`}
+/>
+
 ### trim
 
 <ShapeShowcase

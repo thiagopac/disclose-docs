@@ -3,9 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "docusaurus start",
+    "use:local-dsl": "npm install --no-save ../disclose-dsl",
+    "start": "npm run use:local-dsl && SHOW_DEMOS=1 docusaurus start",
     "build": "docusaurus build",
-    "serve": "docusaurus serve",
+    "serve": "npm run use:local-dsl && SHOW_DEMOS=1 docusaurus serve",
     "clear": "docusaurus clear",
     "deploy": "docusaurus deploy"
   },
@@ -20,7 +21,7 @@
     "@codemirror/theme-one-dark": "^6.0.2",
     "@codemirror/view": "^6.28.4",
     "clsx": "^2.1.1",
-    "disclose-dsl": "^0.1.0",
+    "disclose-dsl": "^0.1.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   }
